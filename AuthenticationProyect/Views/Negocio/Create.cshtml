@@ -1,0 +1,118 @@
+﻿@model AuthenticationProyect.Models.Negocio
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Crear un negocio";
+  
+}
+
+<h1>Crea Un Negocio</h1>
+
+<h4>Negocio</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" id="CreateNegocioForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="NombreNegocio" class="control-label">  Nombre del negocio</label>
+                <input asp-for="NombreNegocio" class="form-control" />
+                <span asp-validation-for="NombreNegocio" class="text-danger"></span>
+                <div class="alert mt-2  alert-danger alert-danger-nombre" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Nombre es obligatorio.
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="UsuarioId" class="control-label">Seleccione el dueño del negocio</label>
+                <select asp-for="UsuarioId" class="form-control" asp-items="ViewBag.UsuarioId">
+                    <option value="" selected disabled>Seleccione un dueño del negocio</option>
+                </select>
+                <div class="alert mt-2  alert-danger alert-danger-user-dueño" role="alert" asp-validation-for="Correo" style="display: none;">
+                   El dueño es obligatorio.
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descripcion" class="control-label"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+                <div class="alert mt-2  alert-danger alert-danger-descripcion" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Descripcion es obligatoria.
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaCreacion" class="control-label"></label>
+                <input asp-for="FechaCreacion" class="form-control" />
+                <span asp-validation-for="FechaCreacion" class="text-danger"></span>
+                <div class="alert mt-2  alert-danger alert-danger-fecha" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Fecha es obligatoria.
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <input class="btn btn-primary" type="submit" value="CREAR" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+  <a class="btn btn-secondary mt-2" asp-action="Index">Volver a la lista</a>
+</div>
+
+
+<script>
+
+    const NombreNegocio = document.querySelector('#NombreNegocio');
+    const Descripcion = document.querySelector('#Descripcion');
+    const FechaCreacion = document.querySelector('#FechaCreacion');
+
+    const usuarioId = document.querySelector('#UsuarioId');
+
+    document.querySelector('#CreateNegocioForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        document.querySelector('.alert-danger-fecha').style.display = 'none';
+        document.querySelector('.alert-danger-descripcion').style.display = 'none';
+        document.querySelector('.alert-danger-nombre').style.display = 'none';
+        document.querySelector('.alert-danger-user-dueño').style.display = 'none';
+        const errors = validateInputs();
+
+        if (errors.length > 0) {
+            return
+        }
+
+        this.submit();
+    });
+
+
+    function validateInputs() {
+        let errors = [];
+
+        if (usuarioId.value.trim() === '') {
+
+            document.querySelector('.alert-danger-user-dueño').style.display = 'block';
+            errors.push('dueño obligatorio')
+        }
+
+        if (NombreNegocio.value.trim() === '') {
+
+            document.querySelector('.alert-danger-nombre').style.display = 'block';
+            errors.push('Nombres obligatorio')
+        }
+
+        if (Descripcion.value.trim() === '') {
+            document.querySelector('.alert-danger-descripcion').style.display = 'block';
+            errors.push('Apellidos obligatorio')
+        }
+
+        if (FechaCreacion.value.trim() === '') {
+            document.querySelector('.alert-danger-fecha').style.display = 'block';
+            errors.push('Correo obligatorio')
+        }
+
+        return errors;
+    }
+
+
+
+
+</script>
+

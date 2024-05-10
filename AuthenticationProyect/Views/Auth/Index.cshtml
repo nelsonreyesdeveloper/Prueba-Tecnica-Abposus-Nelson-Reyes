@@ -1,0 +1,132 @@
+﻿@model AuthenticationProyect.Models.User
+@{
+    Layout = null;
+    ViewData["Title"] = "Iniciar Sesion";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to right, rgba(245, 245, 245, 0.637), rgba(245, 245, 245, 0.699)), url('https://nelsonportafolio.domcloud.dev/wp-content/themes/nelsonreyesdeveloper/img/common-bg.svg');
+             background-size: cover;
+               
+             background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            opacity:100%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+            <div class="col-md-4">
+                <div class="form-container">
+                    <h2 class="text-center mb-4">Iniciar Sesión</h2>
+                    <form asp-controller="Auth" asp-action="Index" method="post">
+                        <div class="alert alert-danger alert-danger-email" role="alert" asp-validation-for="Correo" style="display: none;">
+                            Por favor ingrese su correo.
+                        </div>
+
+                        <div class="alert alert-danger alert-danger-email-invalid" role="alert" asp-validation-for="Correo" style="display: none;">
+                            El correo no es valido.
+                        </div>
+                        <div class="alert alert-danger alert-danger-pass" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                            Por favor ingrese su contraseña.
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Correo" class="form-label">Correo</label>
+                            <input type="email" class="form-control" id="Correo" name="Correo" asp-for="Correo">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Contrasenia" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="Contrasenia" name="Contrasenia" asp-for="Contrasenia">
+                        </div>
+            
+                        <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                    </form>
+                    @if (ViewData["Error"] != null)
+                    {
+                        <div class="alert alert-danger mt-3" role="alert">
+                            @ViewData["Error"]
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.min.js"></script>
+
+    <script>
+      
+        const correo = document.querySelector('input[name="Correo"]');
+        const contrasenia = document.querySelector('input[name="Contrasenia"]');
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+
+            e.preventDefault();
+         
+            document.querySelector('.alert-danger-email').style.display = 'none';
+            document.querySelector('.alert-danger-pass').style.display = 'none';
+            document.querySelector('.alert-danger-email-invalid').style.display = 'none';
+            
+            const Errors = validateInputs();
+
+            if (Errors.length > 0) {
+                return;
+            }
+           
+          
+           if (correo.value && contrasenia.value) {
+                this.submit();
+            }
+
+        });
+           function validateEmail(email) {
+                const re = /\S+@@\S+\.\S+/;
+                return re.test(email);
+            }
+        function validateInputs() {
+            
+            let Errors = [];
+            if (!validateEmail(correo.value)) {
+                document.querySelector('.alert-danger-email').style.display = 'block';
+                Errors.push('Correo Obligario');
+            }
+
+            if (!contrasenia.value) {
+                document.querySelector('.alert-danger-pass').style.display = 'block';
+
+                Errors.push('Contraseña Obligatoria');
+            }
+
+            if (!validateEmail(correo.value) && correo.value.trim() > 0) {
+                document.querySelector('.alert-danger-email-invalid').style.display = 'block';
+                Errors.push('Correo no valido');
+            }
+
+            return Errors;
+
+        
+        }
+
+     
+    </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+﻿@model AuthenticationProyect.Models.Item
+
+@{
+    ViewData["Title"] = "Editar item";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<h1>Editar Item</h1>
+
+<h4>Item</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" id="EditItemForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="NombreItem" class="control-label">   Nombre Item</label>
+                <input asp-for="NombreItem" class="form-control" />
+                <span asp-validation-for="NombreItem" class="text-danger"></span>
+
+                <div class="alert mt-2  alert-danger alert-danger-nombre" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Nombre es obligatorio.
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descripcion" class="control-label"></label>
+                <input asp-for="Descripcion" class="form-control" />
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+                <div class="alert mt-2  alert-danger alert-danger-descripcion" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Descripcion es obligatoria.
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoriaId" class="control-label">Categoria</label>
+                <select asp-for="CategoriaId" class="form-control" asp-items="ViewBag.CategoriaId">
+
+                    <option disabled selected value="">SELECCIONE UNA OPCION</option>
+                </select>
+                <div class="alert mt-2  alert-danger alert-danger-categoria" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Categoria es obligatoria.
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Precio" class="control-label"></label>
+                <input asp-for="Precio" class="form-control" />
+                <span asp-validation-for="Precio" class="text-danger"></span>
+                <div class="alert mt-2  alert-danger alert-danger-precio" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Precio es obligatorio.
+                </div>
+                <div class="alert mt-2  alert-danger alert-danger-precio-invalid" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    El formato del precio no es correcto.
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label asp-for="NegocioId" class="control-label">Mis Negocios</label>
+                <select asp-for="NegocioId" class="form-control" asp-items="ViewBag.NegocioId">
+
+                    <option disabled selected value="">SELECCIONE UNA OPCION</option>
+                </select>
+                <div class="alert mt-2  alert-danger alert-danger-negocio" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Negocio es obligatorio.
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <input type="submit" value="Editar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-secondary mt-2" asp-action="Index">Volver a la lista</a>
+</div>
+
+<script>
+
+    const NombreItem = document.querySelector('#NombreItem');
+    const Descripcion = document.querySelector('#Descripcion');
+    const CategoriaId = document.querySelector('#CategoriaId');
+    const Precio = document.querySelector('#Precio');
+    const NegocioId = document.querySelector('#NegocioId');
+
+
+    document.querySelector('#EditItemForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        document.querySelector('.alert-danger-nombre').style.display = 'none';
+        document.querySelector('.alert-danger-descripcion').style.display = 'none';
+        document.querySelector('.alert-danger-categoria').style.display = 'none';
+        document.querySelector('.alert-danger-precio').style.display = 'none';
+        document.querySelector('.alert-danger-precio-invalid').style.display = 'none';
+        document.querySelector('.alert-danger-negocio').style.display = 'none';
+
+        const errors = validateInputs();
+
+        if (errors.length > 0) {
+            return
+        }
+
+        this.submit();
+    });
+
+
+    function validateInputs() {
+        let errors = [];
+
+        if (NombreItem.value.trim() === '') {
+
+            document.querySelector('.alert-danger-nombre').style.display = 'block';
+            errors.push('Nombres obligatorio')
+
+        }
+
+        if (CategoriaId.value.trim() === '') {
+            document.querySelector('.alert-danger-categoria').style.display = 'block';
+            errors.push('Categorias obligatorio')
+        }
+
+        if (Descripcion.value.trim() === '') {
+            document.querySelector('.alert-danger-descripcion').style.display = 'block';
+            errors.push('Descripcion obligatorio')
+        }
+
+        if (Precio.value.trim() === '') {
+            document.querySelector('.alert-danger-precio').style.display = 'block';
+            errors.push('Correo obligatorio')
+        }
+
+        if (!Number.parseFloat(Precio.value) && Precio.value.length > 0) {
+            document.querySelector('.alert-danger-precio-invalid').style.display = 'block';
+            errors.push('No es un número válido');
+        }
+        if (NegocioId.value.trim() === '') {
+            document.querySelector('.alert-danger-negocio').style.display = 'block';
+            errors.push('negocio obligatorio')
+        }
+
+
+        return errors;
+    }
+
+
+
+
+</script>
+

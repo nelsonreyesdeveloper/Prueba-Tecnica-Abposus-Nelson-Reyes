@@ -1,0 +1,284 @@
+﻿@model X.PagedList.IPagedList<AuthenticationProyect.Models.Negocio>
+@using X.PagedList.Mvc.Core
+
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Resumen Negocios - Admin";
+
+}
+
+<h1 class="my-3">INICIO</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <input type="text" id="searchTextBox" class="form-control" placeholder="Buscar por nombre...">
+    </div>
+    <div class="col-md-4 text-end">
+        <button style="" type="button" id="searchButton" class="btn btn-primary">Buscar</button>
+    </div>
+</div>
+<div class="row">
+    <button style="border: none; background: none; color: blue; text-decoration: underline; cursor: pointer; padding: 0; font: inherit; outline: none;" type="button" id="limpiarfiltros">Limpiar Filtros</button>
+</div>
+<table id="tableData" class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Id)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.First().NombreNegocio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Descripcion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().FechaCreacion)
+            </th>
+            <th>
+               Dueño
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreNegocio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descripcion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaCreacion)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Usuario.NombreCompleto)
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-auto">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = 1 })">Primera</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageCount })">Última</a>
+                    </li>
+                }
+
+            </ul>
+        </nav>
+    </div>
+</div>
+<script>
+
+
+    const searchTextBox = document.getElementById('searchTextBox');
+    const searchButton = document.getElementById('searchButton');
+    const tableData = document.getElementById('tableData');
+
+    const limpiar = document.getElementById('limpiarfiltros');
+
+    const paginationList = document.querySelector('.pagination');
+
+    limpiar.addEventListener('click', (e) => {
+        e.preventDefault();
+       
+        searchTextBox.value = '';
+        fetchNegocios(1, '');
+
+    })
+    async function fetchNegocios(pageNumber = 1, searchTerm = '') {
+        const url = new URL('/Home/GetNegocios', window.location.origin);
+        url.searchParams.set('page', pageNumber);
+        url.searchParams.set('searchTerm', searchTerm);
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        tableData.innerHTML = '';
+
+        const tableHead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+
+        // Crear las celdas de encabezado
+        const idHeader = document.createElement('th');
+        idHeader.textContent = 'ID';
+        headRow.appendChild(idHeader);
+
+        const nombreHeader = document.createElement('th');
+        nombreHeader.textContent = 'Nombre del Negocio';
+        headRow.appendChild(nombreHeader);
+
+ 
+
+
+        const descripcionHeader = document.createElement('th');
+        descripcionHeader.textContent = 'Descripción';
+        headRow.appendChild(descripcionHeader);
+
+        const fechaCreacionHeader = document.createElement('th');
+        fechaCreacionHeader.textContent = 'Fecha de Creación';
+        headRow.appendChild(fechaCreacionHeader);
+
+        const dueñoHeader = document.createElement('th');
+        dueñoHeader.textContent = 'Dueño';
+        headRow.appendChild(dueñoHeader);
+
+        // Agregar la fila de encabezado a table head
+        tableHead.appendChild(headRow);
+
+
+        const tableBody = document.createElement('tbody');
+
+        data.negociosData.forEach(negocio => {
+            const tableRow = document.createElement('tr');
+
+            const idtabla = document.createElement('td');
+            idtabla.textContent = negocio.id;
+            tableRow.appendChild(idtabla);
+
+            const nombreCell = document.createElement('td');
+            nombreCell.textContent = negocio.nombreNegocio;
+            tableRow.appendChild(nombreCell);
+
+            const descripcionCell = document.createElement('td');
+            descripcionCell.textContent = negocio.descripcion;
+            tableRow.appendChild(descripcionCell);
+
+            const fechaCreacionCell = document.createElement('td');
+            fechaCreacionCell.textContent = negocio.fechaCreacion;
+            tableRow.appendChild(fechaCreacionCell);
+
+            const dueñocell = document.createElement('td');
+            dueñocell.textContent = negocio.usuario;
+            tableRow.appendChild(dueñocell);
+
+            tableBody.appendChild(tableRow);
+
+
+        });
+        tableData.appendChild(tableHead);
+        tableData.appendChild(tableBody);
+        generatePaginationLinks(data.pageCount, data.pageNumberList);
+
+    }
+    function generatePaginationLinks(pageCount, currentPage) {
+
+        paginationList.innerHTML = '';
+
+        // Botón para la primera página
+        if (currentPage > 1) {
+            const firstPageItem = document.createElement('li');
+            firstPageItem.classList.add('page-item');
+            const firstPageLink = document.createElement('a');
+            firstPageLink.classList.add('page-link');
+            firstPageLink.textContent = 'Primera';
+
+            firstPageLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                fetchNegocios(1, searchTerm);
+            });
+
+            firstPageItem.appendChild(firstPageLink);
+            paginationList.appendChild(firstPageItem);
+        }
+
+
+
+        for (let i = 1; i <= pageCount; i++) {
+
+            const listItem = document.createElement('li');
+            listItem.classList.add('page-item');
+
+            if (i == currentPage) {
+                listItem.classList.add(i == currentPage ? 'active' : '');
+            }
+
+            const link = document.createElement('a');
+            link.classList.add('page-link');
+            link.textContent = i;
+
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const currentPage = parseInt(e.target.textContent);
+                fetchNegocios(currentPage, searchTerm);
+            });
+
+            listItem.appendChild(link);
+            paginationList.appendChild(listItem);
+
+        }
+
+        // Botón para la última página
+        if (currentPage < pageCount) {
+            const lastPageItem = document.createElement('li');
+            lastPageItem.classList.add('page-item');
+            const lastPageLink = document.createElement('a');
+            lastPageLink.classList.add('page-link');
+            lastPageLink.textContent = 'Última';
+            lastPageLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                fetchNegocios(pageCount, searchTerm);
+            });
+
+            lastPageItem.appendChild(lastPageLink);
+            paginationList.appendChild(lastPageItem);
+        }
+
+
+
+    }
+
+    let searchTerm = "";
+
+    searchButton.addEventListener('click', () => {
+        searchTerm = searchTextBox.value.trim();
+        fetchNegocios(1, searchTerm);
+    });
+
+    fetchNegocios(1, '')
+
+
+
+</script>

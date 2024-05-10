@@ -1,0 +1,147 @@
+﻿@model AuthenticationProyect.Models.User
+
+@{
+    ViewData["Title"] = "Editar Items";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Editar</h1>
+
+<h4>Usuario</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" id="EditUserForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            @if (ViewData.ModelState.ContainsKey("Correo"))
+            {
+                <div class="alert alert-danger mt-3" role="alert">
+                    @ViewData.ModelState["Correo"].Errors.First().ErrorMessage
+                </div>
+            }
+            <div class="form-group">
+                <label asp-for="Nombres" class="control-label"></label>
+                <input asp-for="Nombres" class="form-control" />
+                <span asp-validation-for="Nombres" class="text-danger"></span>
+
+                <div class="alert mt-2  alert-danger alert-danger-nombres" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Los nombres son obligatorios.
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Apellidos" class="control-label"></label>
+                <input asp-for="Apellidos" class="form-control" />
+                <span asp-validation-for="Apellidos" class="text-danger"></span>
+
+                <div class="alert mt-2  alert-danger alert-danger-apellidos" role="alert" asp-validation-for="Contrasenia" style="display: none;">
+                    Los apellidos son obligatorios.
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="TipoId" class="control-label"></label>
+                <select asp-for="TipoId" class="form-control" asp-items="ViewBag.TipoId">
+                    <option value="" disabled selected>--SELECCIONE UNA OPCION--</option>
+                </select>
+                <span asp-validation-for="TipoId" class="text-danger"></span>
+                <div class="alert mt-2  alert-danger alert-danger-tipo" role="alert" asp-validation-for="Correo" style="display: none;">
+                    El tipo de usuario es obligatorio.
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Correo" class="control-label"></label>
+                <input asp-for="Correo" class="form-control" />
+                <span asp-validation-for="Correo" class="text-danger"></span>
+                <div class="alert mt-2  alert-danger alert-danger-email" role="alert" asp-validation-for="Correo" style="display: none;">
+                    El Correo es obligatorio
+                </div>
+                <div class="alert mt-2  alert-danger alert-danger-email-invalid" role="alert" asp-validation-for="Correo" style="display: none;">
+                    El Correo no es valido.
+                </div>
+            </div>
+           
+         <div class="form-group mt-2">
+                <input type="submit" value="Editar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-2">
+    <a class="btn btn-secondary" asp-action="Index">Volver a la lista</a>
+</div>
+
+
+
+<script>
+
+    //validar todos los campos obligatorios
+
+    const nombres = document.querySelector('#Nombres');
+    const apellidos = document.querySelector('#Apellidos');
+    const TipoId = document.querySelector('#TipoId');
+    const Correo = document.querySelector('#Correo');
+  
+    document.querySelector('#EditUserForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        document.querySelector('.alert-danger-nombres').style.display = 'none';
+        document.querySelector('.alert-danger-apellidos').style.display = 'none';
+        document.querySelector('.alert-danger-email').style.display = 'none';
+      
+        document.querySelector('.alert-danger-email-invalid').style.display = 'none';
+        document.querySelector('.alert-danger-tipo').style.display = 'none';
+
+        const errors = validateInputs();
+
+        if (errors.length > 0) {
+            return
+        }
+
+        this.submit();
+    });
+
+    function validateEmail(email) {
+        const re = /\S+@@\S+\.\S+/;
+        return re.test(email);
+    }
+
+    function validateInputs() {
+        let errors = [];
+
+        if (!TipoId.value) {
+            document.querySelector('.alert-danger-tipo').style.display = 'block';
+            errors.push('Tipo es obligatorio');
+        }
+
+        if (!validateEmail(Correo.value) && Correo.value.trim() > 0) {
+            document.querySelector('.alert-danger-email-invalid').style.display = 'block';
+            errors.push('Correo no valido');
+        }
+
+        if (nombres.value.trim() === '') {
+
+            document.querySelector('.alert-danger-nombres').style.display = 'block'
+            errors.push('Nombres obligatorio')
+        }
+
+        if (apellidos.value.trim() === '') {
+            document.querySelector('.alert-danger-apellidos').style.display = 'block';
+            errors.push('Apellidos obligatorio')
+        }
+
+        if (Correo.value.trim() === '') {
+            document.querySelector('.alert-danger-email').style.display = 'block';
+            errors.push('Correo obligatorio')
+        }
+
+     
+
+
+        return errors;
+    }
+
+
+
+
+</script>
