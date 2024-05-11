@@ -9,6 +9,7 @@ using AuthenticationProyect.Models;
 
 using X.PagedList;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 
@@ -196,6 +197,19 @@ namespace AuthenticationProyect.Controllers
                 return Problem("Entity set 'PRUEBATECNICANELSONREYESContext.Users'  is null.");
             }
             var user = await _context.Users.FindAsync(id);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    
+            if (user.Id == Convert.ToInt32(userId))
+            {
+                  
+                ModelState.AddModelError("Cuenta", "No puede eliminar su propia cuenta.");
+              
+                return View(user);
+
+            }
+
             if (user != null)
             {
                 _context.Users.Remove(user);

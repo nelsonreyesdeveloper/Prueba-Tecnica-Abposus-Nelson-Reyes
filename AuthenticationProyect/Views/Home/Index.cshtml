@@ -38,7 +38,7 @@
                 @Html.DisplayNameFor(model => model.First().FechaCreacion)
             </th>
             <th>
-               Dueño
+                Dueño
             </th>
 
         </tr>
@@ -123,7 +123,7 @@
 
     limpiar.addEventListener('click', (e) => {
         e.preventDefault();
-       
+
         searchTextBox.value = '';
         fetchNegocios(1, '');
 
@@ -133,74 +133,81 @@
         url.searchParams.set('page', pageNumber);
         url.searchParams.set('searchTerm', searchTerm);
 
-        const response = await fetch(url);
-        const data = await response.json();
+        try {
 
-        tableData.innerHTML = '';
+            const response = await fetch(url);
+            const data = await response.json();
 
-        const tableHead = document.createElement('thead');
-        const headRow = document.createElement('tr');
+            tableData.innerHTML = '';
 
-        // Crear las celdas de encabezado
-        const idHeader = document.createElement('th');
-        idHeader.textContent = 'ID';
-        headRow.appendChild(idHeader);
+            const tableHead = document.createElement('thead');
+            const headRow = document.createElement('tr');
 
-        const nombreHeader = document.createElement('th');
-        nombreHeader.textContent = 'Nombre del Negocio';
-        headRow.appendChild(nombreHeader);
+            // Crear las celdas de encabezado
+            const idHeader = document.createElement('th');
+            idHeader.textContent = 'ID';
+            headRow.appendChild(idHeader);
 
- 
-
-
-        const descripcionHeader = document.createElement('th');
-        descripcionHeader.textContent = 'Descripción';
-        headRow.appendChild(descripcionHeader);
-
-        const fechaCreacionHeader = document.createElement('th');
-        fechaCreacionHeader.textContent = 'Fecha de Creación';
-        headRow.appendChild(fechaCreacionHeader);
-
-        const dueñoHeader = document.createElement('th');
-        dueñoHeader.textContent = 'Dueño';
-        headRow.appendChild(dueñoHeader);
-
-        // Agregar la fila de encabezado a table head
-        tableHead.appendChild(headRow);
+            const nombreHeader = document.createElement('th');
+            nombreHeader.textContent = 'Nombre del Negocio';
+            headRow.appendChild(nombreHeader);
 
 
-        const tableBody = document.createElement('tbody');
-
-        data.negociosData.forEach(negocio => {
-            const tableRow = document.createElement('tr');
-
-            const idtabla = document.createElement('td');
-            idtabla.textContent = negocio.id;
-            tableRow.appendChild(idtabla);
-
-            const nombreCell = document.createElement('td');
-            nombreCell.textContent = negocio.nombreNegocio;
-            tableRow.appendChild(nombreCell);
-
-            const descripcionCell = document.createElement('td');
-            descripcionCell.textContent = negocio.descripcion;
-            tableRow.appendChild(descripcionCell);
-
-            const fechaCreacionCell = document.createElement('td');
-            fechaCreacionCell.textContent = negocio.fechaCreacion;
-            tableRow.appendChild(fechaCreacionCell);
-
-            const dueñocell = document.createElement('td');
-            dueñocell.textContent = negocio.usuario;
-            tableRow.appendChild(dueñocell);
-
-            tableBody.appendChild(tableRow);
 
 
-        });
-        tableData.appendChild(tableHead);
-        tableData.appendChild(tableBody);
-        generatePaginationLinks(data.pageCount, data.pageNumberList);
+            const descripcionHeader = document.createElement('th');
+            descripcionHeader.textContent = 'Descripción';
+            headRow.appendChild(descripcionHeader);
+
+            const fechaCreacionHeader = document.createElement('th');
+            fechaCreacionHeader.textContent = 'Fecha de Creación';
+            headRow.appendChild(fechaCreacionHeader);
+
+            const dueñoHeader = document.createElement('th');
+            dueñoHeader.textContent = 'Dueño';
+            headRow.appendChild(dueñoHeader);
+
+            // Agregar la fila de encabezado a table head
+            tableHead.appendChild(headRow);
+
+
+            const tableBody = document.createElement('tbody');
+
+            data.negociosData.forEach(negocio => {
+                const tableRow = document.createElement('tr');
+
+                const idtabla = document.createElement('td');
+                idtabla.textContent = negocio.id;
+                tableRow.appendChild(idtabla);
+
+                const nombreCell = document.createElement('td');
+                nombreCell.textContent = negocio.nombreNegocio;
+                tableRow.appendChild(nombreCell);
+
+                const descripcionCell = document.createElement('td');
+                descripcionCell.textContent = negocio.descripcion;
+                tableRow.appendChild(descripcionCell);
+
+                const fechaCreacionCell = document.createElement('td');
+                fechaCreacionCell.textContent = negocio.fechaCreacion;
+                tableRow.appendChild(fechaCreacionCell);
+
+                const dueñocell = document.createElement('td');
+                dueñocell.textContent = negocio.usuario;
+                tableRow.appendChild(dueñocell);
+
+                tableBody.appendChild(tableRow);
+
+
+            });
+            tableData.appendChild(tableHead);
+            tableData.appendChild(tableBody);
+            generatePaginationLinks(data.pageCount, data.pageNumberList);
+
+        } catch (error) {
+            console.log(error);
+        }
+
 
     }
     function generatePaginationLinks(pageCount, currentPage) {

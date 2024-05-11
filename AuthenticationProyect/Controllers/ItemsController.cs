@@ -58,6 +58,57 @@ namespace AuthenticationProyect.Controllers
 
             return View(items);
         }
+
+        public async Task<IActionResult> GetItems(int? page = 1, string searchName = "", string searchCategory = "")
+        {
+            int pageNumber = page ?? 1;
+            int requestedPageSize = 20; 
+            int pageSize = Math.Min(requestedPageSize, 100);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var itemsQuery = _context.Items
+                .Where(i => i.Negocio.UsuarioId == Convert.ToInt32(userId))
+                .Include(i => i.Categoria)
+                .Include(i => i.Negocio)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                itemsQuery = itemsQuery.Where(i => i.NombreItem.ToLower().Contains(searchName.Trim().ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(searchCategory))
+            {
+                itemsQuery = itemsQuery.Where(i => i.Categoria.Id == Convert.ToInt32(searchCategory));
+            }
+
+            var items = await itemsQuery.ToPagedListAsync(pageNumber, pageSize);
+            var totalItems = await itemsQuery.CountAsync();
+
+            var response = new
+            {
+                items = items.Select(i => new
+                {
+                    id = i.Id,
+                    nombreitem = i.NombreItem,
+                    descripcion = i.Descripcion,
+                    categoria = i.Categoria.NombreCategoria,
+                    negocio = i.Negocio.NombreNegocio,
+                    precio = i.Precio,
+                    // ... Add other relevant item properties as needed
+                }),
+                pagination = new
+                {
+                    currentPage = pageNumber,
+                    pageSize = requestedPageSize,
+                    totalItems = totalItems,
+                    totalPages = (int)Math.Ceiling((double)totalItems / pageSize)
+                }
+            };
+
+            return Json(response); // Return JSON data
+        }
         // GET: Items/Details/5
         public async Task<IActionResult> Details(int? id)
         {

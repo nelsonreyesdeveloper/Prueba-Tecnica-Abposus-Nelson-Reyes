@@ -39,6 +39,13 @@
         </dd>
     </dl>
     
+    @if(ViewData.ModelState.ContainsKey("Cuenta"))
+    {
+        <div class="alert alert-danger mt-3" role="alert">
+            @ViewData.ModelState["Cuenta"].Errors.First().ErrorMessage
+        </div>
+    }
+  
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
         <input class="btn btn-danger" type="submit" value="Eliminar" class="btn btn-danger" /> |

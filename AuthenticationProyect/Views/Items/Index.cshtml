@@ -13,7 +13,7 @@
     <a class="btn-primary btn" asp-action="Create">Crear Nuevo Item</a>
 </p>
 
-<form asp-action="Index" method="get">
+<form>
     <div class="row">
 
         <div class="col-12 col-md-6">
@@ -33,16 +33,22 @@
             </div>
 
         </div>
-  
+
     </div>
 
-    <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+    <div class="d-flex justify-content-between ">
+        <button type="submit" id="searchItem" class="btn btn-primary mt-2">Buscar</button>
+        <button style="border: none; background: none; color: blue; text-decoration: underline; cursor: pointer; padding: 0; font: inherit; outline: none;" id="limpiarFiltros">Limpiar Filtros </button>
+
+    </div>
+
+    
 </form>
 <table class="table">
     <thead>
         <tr>
             <th>
-               Nombre Item
+                Nombre Item
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.First().Descripcion)
@@ -60,30 +66,31 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NombreItem)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Precio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Categoria.NombreCategoria)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Negocio.NombreNegocio)
-            </td>
-            <td class="d-flex gap-2">
-                <a asp-action="Edit" class="btn btn-primary" asp-route-id="@item.Id">Editar</a> |
-                    <a asp-action="Details" class="btn btn-warning" asp-route-id="@item.Id">Detalles</a> |
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreItem)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descripcion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Precio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Categoria.NombreCategoria)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Negocio.NombreNegocio)
+                </td>
+                <td class="d-flex gap-2">
+                    <a asp-action="Edit" class="btn btn-primary" asp-route-id="@item.Id">Editar</a>
+                    <a asp-action="Details" class="btn btn-warning" asp-route-id="@item.Id">Detalles</a>
                     <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.Id">Eliminar</a>
-            </td>
-        </tr>
-}
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
@@ -128,3 +135,211 @@
         </nav>
     </div>
 </div>
+
+<script>
+
+
+    const searchItem = document.querySelector('#searchItem');
+    const table = document.querySelector('.table');
+    const paginationList = document.querySelector('.pagination');
+
+    const limpiarFiltros = document.querySelector('#limpiarFiltros');
+
+
+    limpiarFiltros.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector('#searchName').value = '';
+        document.querySelector('#searchCategory').value = '';
+        fetchItems(1, '');
+    });
+
+    let searchTerm = ''
+
+  async function fetchItems(pageNumber = 1, searchTerm = '') {
+        const searchName = document.querySelector('#searchName').value;
+
+        searchTerm = searchName;
+        const searchCategory = document.querySelector('#searchCategory').value;
+
+
+        try {
+
+            const response = await fetch(`/Items/GetItems?page=${pageNumber}&searchName=${searchName}&searchCategory=${searchCategory}`);
+            const data = await response.json();
+            table.innerHTML = '';
+            table.classList.add('table');
+
+            const thead = document.createElement('thead');
+            const tr = document.createElement('tr');
+            const th1 = document.createElement('th');
+            const th2 = document.createElement('th');
+            const th3 = document.createElement('th');
+            const th4 = document.createElement('th');
+            const th5 = document.createElement('th');
+            const th6 = document.createElement('th');
+
+
+            th1.textContent = 'Nombre Item';
+            th2.textContent = 'Descripción';
+            th3.textContent = 'Precio';
+            th4.textContent = 'Categoría';
+            th5.textContent = 'Negocio';
+            th6.textContent = '';
+
+            tr.appendChild(th1);
+            tr.appendChild(th2);
+            tr.appendChild(th3);
+            tr.appendChild(th4);
+            tr.appendChild(th5);
+            tr.appendChild(th6);
+            thead.appendChild(tr);
+
+
+            //realizar el cuerpo de la tabla
+
+
+            const tbody = document.createElement('tbody');
+
+            data.items.forEach(item => {
+                const tr = document.createElement('tr');
+                const td1 = document.createElement('td');
+                const td2 = document.createElement('td');
+                const td3 = document.createElement('td');
+                const td4 = document.createElement('td');
+                const td5 = document.createElement('td');
+                const td6 = document.createElement('td');
+
+                td1.textContent = item.nombreitem;
+                td2.textContent = item.descripcion;
+
+                //redondear a dos decimales
+                td3.textContent = item.precio.toFixed(2);
+                td4.textContent = item.categoria;
+                td5.textContent = item.negocio;
+
+                const a1 = document.createElement('a');
+                a1.href = `/Items/Edit/${item.id}`;
+                a1.textContent = 'Editar';
+                a1.classList.add('btn', 'btn-primary');
+
+                const a2 = document.createElement('a');
+                a2.href = `/Items/Details/${item.id}`;
+                a2.textContent = 'Detalles';
+                a2.classList.add('btn', 'btn-warning');
+
+                const a3 = document.createElement('a');
+                a3.href = `/Items/Delete/${item.id}`;
+                a3.textContent = 'Eliminar';
+                a3.classList.add('btn', 'btn-danger');
+                td6.classList.add('d-flex', 'gap-2');
+                td6.appendChild(a1);
+
+                td6.appendChild(a2);
+
+                td6.appendChild(a3);
+
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                tr.appendChild(td4);
+                tr.appendChild(td5);
+                tr.appendChild(td6);
+
+                tbody.appendChild(tr);
+            })
+
+
+            table.appendChild(thead);
+            table.appendChild(tbody);
+
+
+            generatePaginationLinks(data.pagination.totalPages, data.pagination.currentPage)
+
+
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    searchItem.addEventListener('click', async function (e) {
+        e.preventDefault();
+
+
+        fetchItems(1, '')
+
+    });
+
+
+    function generatePaginationLinks(pageCount, currentPage) {
+
+        paginationList.innerHTML = '';
+
+        // Botón para la primera página
+        if (currentPage > 1) {
+            const firstPageItem = document.createElement('li');
+            firstPageItem.classList.add('page-item');
+            const firstPageLink = document.createElement('a');
+            firstPageLink.classList.add('page-link');
+            firstPageLink.textContent = 'Primera';
+
+            firstPageLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                fetchItems(1, searchTerm);
+            });
+
+            firstPageItem.appendChild(firstPageLink);
+            paginationList.appendChild(firstPageItem);
+        }
+
+
+
+        for (let i = 1; i <= pageCount; i++) {
+
+            const listItem = document.createElement('li');
+            listItem.classList.add('page-item');
+
+            if (i == currentPage) {
+                listItem.classList.add(i == currentPage ? 'active' : '');
+            }
+
+            const link = document.createElement('a');
+            link.classList.add('page-link');
+            link.textContent = i;
+
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const currentPage = parseInt(e.target.textContent);
+                fetchItems(currentPage, searchTerm);
+            });
+
+            listItem.appendChild(link);
+            paginationList.appendChild(listItem);
+
+        }
+
+        // Botón para la última página
+        if (currentPage < pageCount) {
+            const lastPageItem = document.createElement('li');
+            lastPageItem.classList.add('page-item');
+            const lastPageLink = document.createElement('a');
+            lastPageLink.classList.add('page-link');
+            lastPageLink.textContent = 'Última';
+            lastPageLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                fetchItems(pageCount, searchTerm);
+            });
+
+            lastPageItem.appendChild(lastPageLink);
+            paginationList.appendChild(lastPageItem);
+        }
+
+
+
+    }
+
+
+
+    fetchItems(1, '')
+</script>
